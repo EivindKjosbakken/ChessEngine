@@ -1,0 +1,4 @@
+chess
+numpy
+stockfish
+gym-chess
