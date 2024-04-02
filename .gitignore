@@ -1,0 +1,4 @@
+PythonVersion/venv/*
+PythonVersion/stockfish/*
+data/rawData/*
+data/preparedData/*
