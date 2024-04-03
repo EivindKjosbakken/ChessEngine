@@ -10,7 +10,7 @@ from typing import List
 
 from stockfish import Stockfish
 
-from lib.HelperFuctions import *
+from libs.Training import *
 stockfish = Stockfish(path=r"stockfish\stockfish-windows-x86-64-avx2.exe")
 env = gym.make('ChessAlphaZero-v0')
 env.reset()
@@ -45,13 +45,14 @@ def mineGames(numGames: int):
             stockfish.set_position(currentGameMoves)
             if (checkEndCondition(board)):
                 print("game is over")
+                saveData(currentGameMoves, currentGamePositions)
                 break
-    saveData(currentGameMoves, currentGamePositions)
+    
 
 
 
 if __name__ == "__main__":
-    # mineGames(3)
-    testBoard = runGame(12, "movesAndPositions4.npy")
-    # encodeAllMovesAndPositions()
+    mineGames(5)
+    encodeAllMovesAndPositions()
+    runTraining()
 
