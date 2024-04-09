@@ -1,6 +1,6 @@
 # Chess Engine
 
-This Chess Engine project was developed using Jupyter notebooks or pure Python files. It aims to provide an easy look and efficient chess engine implementation.
+This Chess Engine project was developed using Jupyter notebooks or pure Python files. It aims to provide an easy look and efficient chess engine implementation. You can learn more about the project in the three Medium articles written on it, with the following articles: https://medium.com/dev-genius/creating-an-ai-chess-engine-using-imitation-learning-part-1-generating-dataset-8033d9e7f7dc, https://medium.com/dev-genius/creating-an-ai-chess-engine-part-2-encoding-using-the-alphazero-method-63c3c3c3a960, https://medium.com/python-in-plain-english/learn-how-to-train-your-awesome-self-playing-ai-chess-engine-77a46633a949
 
 ## Features
 
@@ -28,5 +28,6 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 ## Contact
 
 If you have any questions or suggestions, feel free to reach out to us.
+
 
 
