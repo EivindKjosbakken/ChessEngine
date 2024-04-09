@@ -2,6 +2,8 @@ import random
 import numpy as np
 import gym
 import chess
+import tkinter as tk
+from tkinter import messagebox
 
 import gym_chess
 import gym.spaces
@@ -15,10 +17,7 @@ stockfish = Stockfish(path=r"stockfish\stockfish-windows-x86-64-avx2.exe")
 env = gym.make('ChessAlphaZero-v0')
 env.reset()
 
-def mineGames(numGames: int):
-    """Mines numGames games of moves"""
-    MAX_MOVES = 500  # Don't continue games after this number
-
+def mineGames(numGames: int, MAX_MOVES: int = 500) -> None:
     for i in range(numGames):
         currentGameMoves = []
         currentGamePositions = []
@@ -48,11 +47,70 @@ def mineGames(numGames: int):
                 saveData(currentGameMoves, currentGamePositions)
                 break
     
+def play_games():
+    games = int(amount_of_games_entry.get())
+    # Function to play games here
+    messagebox.showinfo("Info", f"Playing {games} games.")
 
+def show_total_games():
+    raw_data_dir = "../data/rawdata"  # Replace this with the path to your raw data directory
+    try:
+        total_games = len(os.listdir(raw_data_dir))
+        messagebox.showinfo("Info", f"Total games played: {total_games}")
+    except FileNotFoundError:
+        messagebox.showerror("Error", "Raw data directory not found.")
 
+def show_positions():
+    # Function to show played positions here
+    messagebox.showinfo("Info", "Played positions: <insert played positions here>")
+
+def show_moves():
+    # Function to show played moves here
+    messagebox.showinfo("Info", "Played moves: <insert played moves here>")
+
+def create_main_screen():
+    main_screen = tk.Tk()
+    main_screen.title("Chess Program")
+    
+    menu = tk.Menu(main_screen)
+    main_screen.config(menu=menu)
+    
+    games_menu = tk.Menu(menu)
+    menu.add_cascade(label="Menu", menu=games_menu)
+    games_menu.add_command(label="Play games", command=play_games)
+    games_menu.add_command(label="Show total games played", command=show_total_games)
+    games_menu.add_command(label="Show played positions", command=show_positions)
+    games_menu.add_command(label="Show played moves", command=show_moves)
+    
+    amount_of_games_label = tk.Label(main_screen, text="Amount of games:")
+    amount_of_games_label.pack()
+    global amount_of_games_entry
+    amount_of_games_entry = tk.Entry(main_screen)
+    amount_of_games_entry.pack()
+    
+    main_screen.mainloop()
 
 if __name__ == "__main__":
-    mineGames(5)
-    encodeAllMovesAndPositions()
-    runTraining()
+    # create_main_screen()
+    user_input = input("Please enter an integer: ")
+
+    try:
+        # Convert the input to an integer
+        user_integer = int(user_input)
+        print("You entered:", user_integer)
+        mineGames(user_integer)
+        # Ask the user if they want to proceed with training
+        train_input = input("Do you want to proceed with training? (yes/no): ").lower()
+
+        if train_input == "yes":
+            encodeAllMovesAndPositions()
+            runTraining()
+        elif train_input == "no":
+            print("Training will not proceed.")
+        else:
+            print("Invalid input for training. Please enter 'yes' or 'no'.")
+    except ValueError:
+     print("Invalid input. Please enter a valid integer.")
+    
+    
 

@@ -44,6 +44,10 @@ def play(Elo):
     return board;
 
 if __name__ == "__main__":
-    play(10)
-    # encodeAllMovesAndPositions()
-    # runTraining()
+    # create_main_screen()
+    user_input = input("Please enter an integer of elo you want to play against:")
+    try:
+        ChessBaord = play(user_input)
+        ChessBaord
+    except Exception as e:
+        print("An error occurred:", str(e))

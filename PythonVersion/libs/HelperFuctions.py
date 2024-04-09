@@ -234,6 +234,16 @@ def encodeBoardFromFen(fen: str) -> np.array:
 
 #function to encode all moves and positions from rawData folder
 def encodeAllMovesAndPositions():
+    """
+    Encodes all moves and positions from raw data files and saves them as prepared data files.
+
+    This function reads raw data files containing moves and positions, encodes each move and position,
+    and saves the encoded data as prepared data files. It uses the `encodeMove` and `encodeBoardFromFen`
+    functions to perform the encoding.
+
+    Returns:
+        None
+    """
     board = chess.Board() #this is used to change whose turn it is so that the encoding works
     board.turn = False #set turn to black first, changed on first run
 
@@ -272,8 +282,17 @@ def encodeAllMovesAndPositions():
 
 
 #decoding moves from idx to uci notation
-
 def _decodeKnight(action: int) -> Optional[chess.Move]:
+    """
+    Decodes the given action into a knight move in the chess game.
+
+    Args:
+        action (int): The action to decode.
+
+    Returns:
+        Optional[chess.Move]: The decoded knight move as a chess.Move object, or None if the action is not a valid knight move.
+    """
+
     _NUM_TYPES: int = 8
 
     #: Starting point of knight moves in last dimension of 8 x 8 x 73 action array.

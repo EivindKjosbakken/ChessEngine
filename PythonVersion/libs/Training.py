@@ -189,12 +189,13 @@ def createBestModelFile():
         f.write("\ntestPath")
         f.close()
 
-def saveBestModel(vloss, pathToBestModel):
+def saveBestModel(vloss, pathToBestModel, epoch_number):
     f = open("../data/savedModels/bestModel.txt", "w")
     f.write(str(vloss.item()))
     f.write("\n")
     f.write(pathToBestModel)
     print("NEW BEST MODEL FOUND WITH LOSS:", vloss)
+
 
 def retrieveBestModelInfo():
     f = open('../data/savedModels/bestModel.txt', "r")
@@ -208,6 +209,7 @@ LEARNING_RATE = 0.001
 MOMENTUM = 0.9
 
 def runTraining():
+
     createBestModelFile()
 
     bestLoss, bestModelPath = retrieveBestModelInfo()
@@ -269,8 +271,8 @@ def runTraining():
             if (bestLoss > best_vloss): #if better than previous best loss from all models created, save it
                 model_path = '../data/savedModels/model_{}_{}'.format(timestamp, epoch_number)
                 torch.save(model.state_dict(), model_path)
-                saveBestModel(best_vloss, model_path)
+                saveBestModel(best_vloss, model_path, epoch_number)
 
         epoch_number += 1
 
-    # print("\n\nBEST VALIDATION LOSS FOR ALL MODELS: ", bestLoss)
+    print("\n\nBEST VALIDATION LOSS FOR ALL MODELS: ", bestLoss)
