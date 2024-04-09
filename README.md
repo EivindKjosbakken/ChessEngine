@@ -1,11 +1,11 @@
 # Chess Engine
 
-This is a Chess Engine project developed in JupyterNotes book or in pure Python files. It aims to provide a easy look and efficient chess engine implementation.
+This Chess Engine project was developed using Jupyter notebooks or pure Python files. It aims to provide an easy look and efficient chess engine implementation.
 
 ## Features
 
-- Juptyernotebook, compatible chess engine.
-- Pyhton work version
+- Jupyter notebook, compatible chess engine.
+- Python work version
 
 ## Installation
 
