@@ -46,7 +46,6 @@ def mineGames(numGames: int, MAX_MOVES: int = 500) -> None:
                 print("game is over")
                 saveData(currentGameMoves, currentGamePositions)
                 break
-    
 def play_games():
     games = int(amount_of_games_entry.get())
     # Function to play games here
