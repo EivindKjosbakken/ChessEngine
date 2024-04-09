@@ -1,0 +1,10 @@
+PythonVersion/venv/*
+PythonVersion/stockfish/*
+data/rawData/movesAndPositions**
+data/preparedData/moves*
+data/preparedData/positions**
+data/savedModels/model_**
+PythonVersion/libs/__pycache__/*
+PythonVersion/runs/*
+.vscode/settings.json
+data/savedModels/bestModel.txt
