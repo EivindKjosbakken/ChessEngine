@@ -1,7 +1,8 @@
 PythonVersion/venv/*
 PythonVersion/stockfish/*
-data/rawData/*
-data/preparedData/*
+data/rawData/movesAndPositions**
+data/preparedData/moves*
+data/preparedData/positions**
 data/savedModels/model_**
 PythonVersion/libs/__pycache__/*
 PythonVersion/runs/*
