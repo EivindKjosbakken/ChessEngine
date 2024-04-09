@@ -1,0 +1,8 @@
+chess
+numpy
+stockfish
+gym-chess
+torch
+torchvision
+tqdm
+tensorboard
