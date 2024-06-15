@@ -8,3 +8,8 @@ PythonVersion/libs/__pycache__/*
 PythonVersion/runs/*
 .vscode/settings.json
 data/savedModels/bestModel.txt
+.idea/
+stockfish/
+JupyterNotebook/runs
+JupyterNotebook/.ipynb_checkpoints
+PythonVersion/__pycache__
