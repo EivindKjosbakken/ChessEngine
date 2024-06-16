@@ -5,7 +5,7 @@ from pathlib import Path
 import chess
 import numpy as np
 import torch
-from libs.HelperFuctions import *
+from libs.HelperFunctions import *
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
