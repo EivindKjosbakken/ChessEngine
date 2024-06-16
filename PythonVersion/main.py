@@ -54,7 +54,7 @@ def play_games():
 def show_total_games():
     raw_data_dir = "../data/rawdata"  # Replace this with the path to your raw data directory
     try:
-        total_games = len(os.listdir(raw_data_dir))
+        total_games = len(os.listdir(raw_data_dir))-1
         messagebox.showinfo("Info", f"Total games played: {total_games}")
     except FileNotFoundError:
         messagebox.showerror("Error", "Raw data directory not found.")

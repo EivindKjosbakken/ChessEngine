@@ -22,7 +22,7 @@ def saveData(moves, positions):
 
 	nextIdx = findNextIdx()
 	np.save(f"../data/rawData/movesAndPositions{nextIdx}.npy", movesAndPositions)
-	print("Saved successfully")
+	print(f"Saved successfully as ../data/rawData/movesAndPositions{nextIdx}.npy")
 
 
 def runGame(numMoves, filename = "movesAndPositions1.npy"):
@@ -248,9 +248,9 @@ def encodeAllMovesAndPositions():
     board.turn = False #set turn to black first, changed on first run
 
     #find all files in folder:
-    files = os.listdir('../data/rawData')
+    files = (glob.glob(r"../data/rawData/*.npy"))
     for idx, f in enumerate(files):
-        movesAndPositions = np.load(f'../data/rawData/{f}', allow_pickle=True)
+        movesAndPositions = np.load(f'{f}', allow_pickle=True)
         moves = movesAndPositions[:,0]
         positions = movesAndPositions[:,1]
         encodedMoves = []
