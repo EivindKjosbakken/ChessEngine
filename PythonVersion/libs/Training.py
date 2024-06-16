@@ -1,22 +1,13 @@
+import glob
+from datetime import datetime
+from pathlib import Path
+
+import chess
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.functional as F
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.tensorboard import SummaryWriter
-from datetime import datetime
-import gym
-import gym_chess
-import os
-import chess
-import glob
-from tqdm import tqdm
-from gym_chess.alphazero.move_encoding import utils
-from pathlib import Path
 from libs.HelperFuctions import *
-
-from typing import Optional
+from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 
 def LoadingTrainingData(FRACTION_OF_DATA = 1, BATCH_SIZE = 32):

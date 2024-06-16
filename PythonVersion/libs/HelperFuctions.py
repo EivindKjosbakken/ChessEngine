@@ -1,5 +1,4 @@
 import numpy as np
-import os
 import chess
 import glob
 from gym_chess.alphazero.move_encoding import utils

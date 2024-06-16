@@ -1,15 +1,8 @@
 import random
-import numpy as np
-import gym
-import chess
 import tkinter as tk
 from tkinter import messagebox
 
-import gym_chess
-import gym.spaces
-
-from typing import List
-
+import gym
 from stockfish import Stockfish
 
 from libs.Training import *
