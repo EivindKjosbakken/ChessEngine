@@ -3,6 +3,8 @@ import chess
 import glob
 from gym_chess.alphazero.move_encoding import utils
 from typing import Optional
+import uuid
+import os
 
 
 #helper functions:
@@ -19,14 +21,17 @@ def saveData(moves, positions):
 	positions = np.array(positions).reshape(-1,1)
 	movesAndPositions = np.concatenate((moves, positions), axis = 1)
 
-	nextIdx = findNextIdx()
-	np.save(f"../data/rawData/movesAndPositions{nextIdx}.npy", movesAndPositions)
-	print(f"Saved successfully as ../data/rawData/movesAndPositions{nextIdx}.npy")
+	nextUuid = uuid.uuid4()
+	np.save(f"../data/rawData/movesAndPositions{nextUuid}.npy", movesAndPositions)
+	print(f"Saved successfully as ../data/rawData/movesAndPositions{nextUuid}.npy")
 
 
-def runGame(numMoves, filename = "movesAndPositions1.npy"):
+def runGame(numMoves, index = 0):
 	"""run a game you stored"""
-	testing = np.load(f"../data/rawData/{filename}")
+	raw_data_dir = "../data/rawdata"
+	filesByLastmod = sorted(filter(os.path.isfile, glob.glob(raw_data_dir + '/*.npy')), key = os.path.getmtime)
+	filename = filesByLastmod[index]
+	testing = np.load(filename)
 	moves = testing[:, 0]
 	if (numMoves > len(moves)):
 		print("Must enter a lower number of moves than maximum game length. Game length here is: ", len(moves))
@@ -37,19 +42,10 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 	for i in range(numMoves):
 		move = moves[i]
 		testBoard.push_san(move)
-	return testBoard
-#save
-def findNextIdx():
-	files = (glob.glob(r"../data/rawData/*.npy"))
-	if (len(files) == 0):
-		return 1 #if no files, return 1
-	highestIdx = 0
-	for f in files:
-		file = f
-		currIdx = file.split("movesAndPositions")[-1].split(".npy")[0]
-		highestIdx = max(highestIdx, int(currIdx))
 
-	return int(highestIdx)+1
+	print(filename)
+	return testBoard
+
 
 #fixing encoding funcs from openai
 
@@ -247,8 +243,8 @@ def encodeAllMovesAndPositions():
     board.turn = False #set turn to black first, changed on first run
 
     #find all files in folder:
-    files = (glob.glob(r"../data/rawData/*.npy"))
-    for idx, f in enumerate(files):
+    files = (glob.glob(r"../data/rawData/movesAndPositions*.npy"))
+    for f in files:
         movesAndPositions = np.load(f'{f}', allow_pickle=True)
         moves = movesAndPositions[:,0]
         positions = movesAndPositions[:,1]
@@ -272,9 +268,10 @@ def encodeAllMovesAndPositions():
                     print(positions[i])
                     print(i)
                     break
-            
-        np.save(f'../data/preparedData/moves{idx}', np.array(encodedMoves))
-        np.save(f'../data/preparedData/positions{idx}', np.array(encodedPositions))
+
+        currUuid = f.split("movesAndPositions")[-1].split(".npy")[0]
+        np.save(f'../data/preparedData/moves{currUuid}', np.array(encodedMoves))
+        np.save(f'../data/preparedData/positions{currUuid}', np.array(encodedPositions))
 
 #helper methods:
 

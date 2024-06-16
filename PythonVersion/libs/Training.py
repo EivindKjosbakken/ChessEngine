@@ -16,19 +16,19 @@ def LoadingTrainingData(FRACTION_OF_DATA = 1, BATCH_SIZE = 32):
     allMoves = []
     allBoards = []
 
-    files = (glob.glob(r"../data/preparedData/*.npy"))
-    numOfEach = len(files) // 2 # half are moves, other half are positions
+    files = (glob.glob(r"../data/preparedData/moves*.npy"))
 
-    for i in range(numOfEach):
+    for f in files:
+        currUuid = f.split("moves")[-1].split(".npy")[0]
         try:
-            moves = np.load(f"../data/preparedData/moves{i}.npy", allow_pickle=True)
-            boards = np.load(f"../data/preparedData/positions{i}.npy", allow_pickle=True)
+            moves = np.load(f"../data/preparedData/moves{currUuid}.npy", allow_pickle=True)
+            boards = np.load(f"../data/preparedData/positions{currUuid}.npy", allow_pickle=True)
             if (len(moves) != len(boards)):
-                print("ERROR ON i = ", i, len(moves), len(boards))
+                print("ERROR ON i = ", currUuid, len(moves), len(boards))
             allMoves.extend(moves)
             allBoards.extend(boards)
         except:
-            print("error: could not load ", i, ", but is still going")
+            print("error: could not load ", currUuid, ", but is still going")
             pass
             
 
