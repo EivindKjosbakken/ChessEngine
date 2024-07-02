@@ -1,3 +1,5 @@
+import concurrent.futures
+import os
 import random
 import tkinter as tk
 from tkinter import messagebox
@@ -11,34 +13,53 @@ env = gym.make('ChessAlphaZero-v0')
 env.reset()
 
 def mineGames(numGames: int, MAX_MOVES: int = 500) -> None:
-    for i in range(numGames):
-        currentGameMoves = []
-        currentGamePositions = []
-        board = chess.Board()
-        stockfish.set_position([])
-        for i in range(MAX_MOVES):
-            #randomly choose from those 3 moves
-            moves = stockfish.get_top_moves(3)
-            #if less than 3 moves available, choose first one, if none available, exit
-            if (len(moves) == 0):
-                print("game is over")
-                break
-            elif (len(moves) == 1):
-                move = moves[0]["Move"]
-            elif (len(moves) == 2):
-                move = random.choices(moves, weights=(80, 20), k=1)[0]["Move"]
-            else:
-                move = random.choices(moves, weights=(80, 15, 5), k=1)[0]["Move"]
+    # Using ProcessPoolExecutor with a limited number of workers
+    max_workers = 16  # Adjust based on your CPU capacity
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+        # Create a list of arguments using list comprehension
+        data_list = [MAX_MOVES] * numGames
 
-            currentGamePositions.append(stockfish.get_fen_position())
-            currentGameMoves.append(move) #make sure to add str version of move before changing format
-            move = chess.Move.from_uci(str(move)) #convert to format chess package likes
-            board.push(move)
-            stockfish.set_position(currentGameMoves)
-            if (checkEndCondition(board)):
-                print("game is over")
-                saveData(currentGameMoves, currentGamePositions)
-                break
+        # Submit tasks to the executor
+        futures = [executor.submit(mineOneGame, data) for data in data_list]
+
+        # Wait for all futures to complete
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()  # This will re-raise any exceptions caught during the task execution
+            except Exception as exc:
+                print(f'Task generated an exception: {exc}')
+
+
+def mineOneGame(MAX_MOVES):
+    currentGameMoves = []
+    currentGamePositions = []
+    board = chess.Board()
+    stockfish.set_position([])
+    for i in range(MAX_MOVES):
+        # randomly choose from those 3 moves
+        moves = stockfish.get_top_moves(3)
+        # if less than 3 moves available, choose first one, if none available, exit
+        if (len(moves) == 0):
+            print("game is over")
+            break
+        elif (len(moves) == 1):
+            move = moves[0]["Move"]
+        elif (len(moves) == 2):
+            move = random.choices(moves, weights=(80, 20), k=1)[0]["Move"]
+        else:
+            move = random.choices(moves, weights=(80, 15, 5), k=1)[0]["Move"]
+
+        currentGamePositions.append(stockfish.get_fen_position())
+        currentGameMoves.append(move)  # make sure to add str version of move before changing format
+        move = chess.Move.from_uci(str(move))  # convert to format chess package likes
+        board.push(move)
+        stockfish.set_position(currentGameMoves)
+        if (checkEndCondition(board)):
+            print("game is over")
+            saveData(currentGameMoves, currentGamePositions)
+            break
+
+
 def play_games():
     games = int(amount_of_games_entry.get())
     # Function to play games here
@@ -101,8 +122,9 @@ if __name__ == "__main__":
             print("Training will not proceed.")
         else:
             print("Invalid input for training. Please enter 'yes' or 'no'.")
-    except ValueError:
+    except ValueError as e:
      print("Invalid input. Please enter a valid integer.")
+     print("An error occurred:", str(e))
     
     
 

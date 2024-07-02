@@ -128,6 +128,7 @@ class Model(torch.nn.Module):
             #return random move if model failed to find move
             moves = board.legal_moves
             if (len(moves) > 0):
+                print(f"Returning one of {len(moves)} moves")
                 return np.random.choice(list(moves))
             print("Your predict function could not find any legal/decodable moves")
             return None #if no legal moves found, return None
