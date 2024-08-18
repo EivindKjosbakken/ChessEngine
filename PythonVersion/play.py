@@ -1,6 +1,5 @@
 from libs.Training import *
 from stockfish import Stockfish
-from stockfish import Stockfish
 
 
 def play(Elo):
@@ -17,7 +16,7 @@ def play(Elo):
     # test elo  against stockfish
     ELO_RATING = Elo
 
-    stockfish = Stockfish(path=r"./stockfish/stockfish-windows-x86-64-avx2")
+    stockfish = Stockfish(path=r"../stockfish/stockfish-windows-x86-64-avx2.exe")
     stockfish.reset_engine_parameters()
     stockfish.set_elo_rating(ELO_RATING)
     stockfish.set_skill_level(0)
@@ -31,9 +30,13 @@ def play(Elo):
             move = saved_model.predict(board)
             board.push(move)
             allMoves.append(str(move)) #add so stockfish can see
-        except:
-            print("game over. You lost")
+        except Exception as e:
+            if str(e) == "object of type 'LegalMoveGenerator' has no len()":
+                print("game over. You lost in", i, "moves")
+            else:
+                print("An error occurred:", str(e))
             break
+
         # #then get stockfish move
         stockfish.set_position(allMoves)
         stockfishMove = stockfish.get_best_move_time(1)
@@ -41,13 +44,12 @@ def play(Elo):
         stockfishMove = chess.Move.from_uci(stockfishMove)
         board.push(stockfishMove)
 
-    return board;
+    return board
 
 if __name__ == "__main__":
     # create_main_screen()
     user_input = input("Please enter an integer of elo you want to play against:")
     try:
-        ChessBaord = play(user_input)
-        ChessBaord
+        ChessBoard = play(user_input)
     except Exception as e:
         print("An error occurred:", str(e))

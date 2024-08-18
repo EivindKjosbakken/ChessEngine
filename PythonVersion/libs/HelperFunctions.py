@@ -1,9 +1,10 @@
 import numpy as np
-import os
 import chess
 import glob
 from gym_chess.alphazero.move_encoding import utils
 from typing import Optional
+import uuid
+import os
 
 
 #helper functions:
@@ -20,14 +21,17 @@ def saveData(moves, positions):
 	positions = np.array(positions).reshape(-1,1)
 	movesAndPositions = np.concatenate((moves, positions), axis = 1)
 
-	nextIdx = findNextIdx()
-	np.save(f"../data/rawData/movesAndPositions{nextIdx}.npy", movesAndPositions)
-	print("Saved successfully")
+	nextUuid = uuid.uuid4()
+	np.save(f"../data/rawData/movesAndPositions{nextUuid}.npy", movesAndPositions)
+	print(f"Saved successfully as ../data/rawData/movesAndPositions{nextUuid}.npy")
 
 
-def runGame(numMoves, filename = "movesAndPositions1.npy"):
+def runGame(numMoves, index = 0):
 	"""run a game you stored"""
-	testing = np.load(f"../data/rawData/{filename}")
+	raw_data_dir = "../data/rawdata"
+	filesByLastmod = sorted(filter(os.path.isfile, glob.glob(raw_data_dir + '/*.npy')), key = os.path.getmtime)
+	filename = filesByLastmod[index]
+	testing = np.load(filename)
 	moves = testing[:, 0]
 	if (numMoves > len(moves)):
 		print("Must enter a lower number of moves than maximum game length. Game length here is: ", len(moves))
@@ -38,19 +42,10 @@ def runGame(numMoves, filename = "movesAndPositions1.npy"):
 	for i in range(numMoves):
 		move = moves[i]
 		testBoard.push_san(move)
-	return testBoard
-#save
-def findNextIdx():
-	files = (glob.glob(r"../data/rawData/*.npy"))
-	if (len(files) == 0):
-		return 1 #if no files, return 1
-	highestIdx = 0
-	for f in files:
-		file = f
-		currIdx = file.split("movesAndPositions")[-1].split(".npy")[0]
-		highestIdx = max(highestIdx, int(currIdx))
 
-	return int(highestIdx)+1
+	print(filename)
+	return testBoard
+
 
 #fixing encoding funcs from openai
 
@@ -202,31 +197,31 @@ def encodeMove(move: str, board) -> int:
     return action
 
 def encodeBoard(board: chess.Board) -> np.array:
- """Converts a board to numpy array representation."""
+    """Converts a board to numpy array representation."""
 
- array = np.zeros((8, 8, 14), dtype=int)
+    array = np.zeros((8, 8, 14), dtype=int)
 
- for square, piece in board.piece_map().items():
-  rank, file = chess.square_rank(square), chess.square_file(square)
-  piece_type, color = piece.piece_type, piece.color
- 
-  # The first six planes encode the pieces of the active player, 
-  # the following six those of the active player's opponent. Since
-  # this class always stores boards oriented towards the white player,
-  # White is considered to be the active player here.
-  offset = 0 if color == chess.WHITE else 6
-  
-  # Chess enumerates piece types beginning with one, which you have
-  # to account for
-  idx = piece_type - 1
- 
-  array[rank, file, idx + offset] = 1
+    for square, piece in board.piece_map().items():
+        rank, file = chess.square_rank(square), chess.square_file(square)
+        piece_type, color = piece.piece_type, piece.color
 
- # Repetition counters
- array[:, :, 12] = board.is_repetition(2)
- array[:, :, 13] = board.is_repetition(3)
+        # The first six planes encode the pieces of the active player,
+        # the following six those of the active player's opponent. Since
+        # this class always stores boards oriented towards the white player,
+        # White is considered to be the active player here.
+        offset = 0 if color == chess.WHITE else 6
 
- return array
+        # Chess enumerates piece types beginning with one, which we have
+        # to account for
+        idx = piece_type - 1
+
+        array[rank, file, idx + offset] = 1
+
+    # Repetition counters
+    array[:, :, 12] = board.is_repetition(2)
+    array[:, :, 13] = board.is_repetition(3)
+
+    return array
 
 def encodeBoardFromFen(fen: str) -> np.array:
  board = chess.Board(fen)
@@ -248,9 +243,9 @@ def encodeAllMovesAndPositions():
     board.turn = False #set turn to black first, changed on first run
 
     #find all files in folder:
-    files = os.listdir('../data/rawData')
-    for idx, f in enumerate(files):
-        movesAndPositions = np.load(f'../data/rawData/{f}', allow_pickle=True)
+    files = (glob.glob(r"../data/rawData/movesAndPositions*.npy"))
+    for f in files:
+        movesAndPositions = np.load(f'{f}', allow_pickle=True)
         moves = movesAndPositions[:,0]
         positions = movesAndPositions[:,1]
         encodedMoves = []
@@ -273,9 +268,10 @@ def encodeAllMovesAndPositions():
                     print(positions[i])
                     print(i)
                     break
-            
-        np.save(f'../data/preparedData/moves{idx}', np.array(encodedMoves))
-        np.save(f'../data/preparedData/positions{idx}', np.array(encodedPositions))
+
+        currUuid = f.split("movesAndPositions")[-1].split(".npy")[0]
+        np.save(f'../data/preparedData/moves{currUuid}', np.array(encodedMoves))
+        np.save(f'../data/preparedData/positions{currUuid}', np.array(encodedPositions))
 
 #helper methods:
 
@@ -464,30 +460,3 @@ def decodeMove(action: int, board) -> chess.Move:
                 move.promotion = chess.QUEEN
 
         return move
-
-def encodeBoard(board: chess.Board) -> np.array:
-	"""Converts a board to numpy array representation."""
-
-	array = np.zeros((8, 8, 14), dtype=int)
-
-	for square, piece in board.piece_map().items():
-		rank, file = chess.square_rank(square), chess.square_file(square)
-		piece_type, color = piece.piece_type, piece.color
-	
-		# The first six planes encode the pieces of the active player, 
-		# the following six those of the active player's opponent. Since
-		# this class always stores boards oriented towards the white player,
-		# White is considered to be the active player here.
-		offset = 0 if color == chess.WHITE else 6
-		
-		# Chess enumerates piece types beginning with one, which we have
-		# to account for
-		idx = piece_type - 1
-	
-		array[rank, file, idx + offset] = 1
-
-	# Repetition counters
-	array[:, :, 12] = board.is_repetition(2)
-	array[:, :, 13] = board.is_repetition(3)
-
-	return array

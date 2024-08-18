@@ -1,21 +1,13 @@
+import glob
+from datetime import datetime
+from pathlib import Path
+
+import chess
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.functional as F
-import torchvision
-import torchvision.transforms as transforms
+from libs.HelperFunctions import *
 from torch.utils.tensorboard import SummaryWriter
-from datetime import datetime
-import gym
-import gym_chess
-import os
-import chess
 from tqdm import tqdm
-from gym_chess.alphazero.move_encoding import utils
-from pathlib import Path
-from libs.HelperFuctions import *
-
-from typing import Optional
 
 
 def LoadingTrainingData(FRACTION_OF_DATA = 1, BATCH_SIZE = 32):
@@ -24,19 +16,19 @@ def LoadingTrainingData(FRACTION_OF_DATA = 1, BATCH_SIZE = 32):
     allMoves = []
     allBoards = []
 
-    files = os.listdir('../data/preparedData')
-    numOfEach = len(files) // 2 # half are moves, other half are positions
+    files = (glob.glob(r"../data/preparedData/moves*.npy"))
 
-    for i in range(numOfEach):
+    for f in files:
+        currUuid = f.split("moves")[-1].split(".npy")[0]
         try:
-            moves = np.load(f"../data/preparedData/moves{i}.npy", allow_pickle=True)
-            boards = np.load(f"../data/preparedData/positions{i}.npy", allow_pickle=True)
+            moves = np.load(f"../data/preparedData/moves{currUuid}.npy", allow_pickle=True)
+            boards = np.load(f"../data/preparedData/positions{currUuid}.npy", allow_pickle=True)
             if (len(moves) != len(boards)):
-                print("ERROR ON i = ", i, len(moves), len(boards))
+                print("ERROR ON i = ", currUuid, len(moves), len(boards))
             allMoves.extend(moves)
             allBoards.extend(boards)
         except:
-            # print("error: could not load ", i, ", but is still going")
+            print("error: could not load ", currUuid, ", but is still going")
             pass
             
 
@@ -136,7 +128,9 @@ class Model(torch.nn.Module):
             #return random move if model failed to find move
             moves = board.legal_moves
             if (len(moves) > 0):
+                print(f"Returning one of {len(moves)} moves")
                 return np.random.choice(list(moves))
+            print("Your predict function could not find any legal/decodable moves")
             return None #if no legal moves found, return None
             # raise Exception("Your predict function could not find any legal/decodable moves")
         
